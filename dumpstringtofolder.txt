@@ -1,0 +1,20 @@
+$$ Dumps the managed strings to a file
+$$ Platform x86
+$$ Usage $$>a<"c:\temp\dumpstringtofolder.txt" 6544f9ac 5000 c:\temp\stringtest
+$$ First argument is the string method table pointer
+$$ Second argument is the Min size of the string that needs to be used filter
+$$ the strings
+$$ Third is the path of the file
+.foreach ($string {!dumpheap -short -mt ${$arg1}  -min ${$arg2}})
+{ 
+
+  $$ MT        Field      Offset               Type  VT     Attr    Value Name
+  $$ 65452978  40000ed        4         System.Int32  1 instance    71117 m_stringLength
+  $$ 65451dc8  40000ee        8          System.Char  1 instance       3c m_firstChar
+  $$ 6544f9ac  40000ef        8        System.String  0   shared   static Empty
+
+  $$ start of string is stored in the 8th offset, which can be inferred from above
+  $$ Size of the string which is stored in the 4th offset
+  r@$t0=  poi(${$string}+4)*2
+  .writemem ${$arg3}${$string}.txt ${$string}+8 ${$string}+8+@$t0
+}
